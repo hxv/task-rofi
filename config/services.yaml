@@ -1,0 +1,61 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    _instanceof:
+        Symfony\Component\EventDispatcher\EventSubscriberInterface:
+            tags:
+                - { name: 'app.event_subscriber' }
+
+    hxv\TaskRofi\:
+        resource: '../src/*'
+
+    hxv\TaskRofi\App:
+        public: true
+
+    app.taskwarrior.serializer.normalizer.object_normalizer.property_info_extractor.reflection_extractor:
+        class: Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor
+
+    app.taskwarrior.serializer.normalizer.object_normalizer.property_info_extractor:
+        class: Symfony\Component\PropertyInfo\PropertyInfoExtractor
+        arguments:
+            - []
+            - ['@app.taskwarrior.serializer.normalizer.object_normalizer.property_info_extractor.reflection_extractor']
+
+    app.taskwarrior.serializer.normalizer.object_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+        arguments:
+            - null
+            - null
+            - null
+            - '@app.taskwarrior.serializer.normalizer.object_normalizer.property_info_extractor'
+
+    app.taskwarrior.serializer.normalizer.date_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\DateTimeNormalizer
+
+    app.taskwarrior.serializer.encoder.json_encoder:
+        class: Symfony\Component\Serializer\Encoder\JsonEncoder
+
+    app.taskwarrior.serializer:
+        class: Symfony\Component\Serializer\Serializer
+        arguments:
+            - ['@app.taskwarrior.serializer.normalizer.object_normalizer', '@app.taskwarrior.serializer.normalizer.date_normalizer']
+            - ['@app.taskwarrior.serializer.encoder.json_encoder']
+
+    hxv\TaskRofi\Taskwarrior\Taskwarrior:
+        arguments:
+            $serializer: '@app.taskwarrior.serializer'
+
+    hxv\TaskRofi\Menu\MenuInterface: '@hxv\TaskRofi\Menu\RofiMenu'
+
+    app.event_dispatcher.factory:
+        class: hxv\TaskRofi\EventDispatcherFactory
+        arguments:
+            $eventSubscribers: !tagged_iterator 'app.event_subscriber'
+
+    app.event_dispatcher:
+        factory: ['@app.event_dispatcher.factory', 'create']
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+
+    Symfony\Component\EventDispatcher\EventDispatcherInterface: '@app.event_dispatcher'

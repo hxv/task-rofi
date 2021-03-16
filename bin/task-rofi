@@ -1,0 +1,25 @@
+#!/usr/bin/env php8.0
+<?php
+
+use hxv\TaskRofi\App;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+if ($argc !== 2) {
+    echo "Usage: {$argv[0]} <menu>\n";
+
+    exit(1);
+}
+
+$containerBuilder = new ContainerBuilder();
+$loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__));
+$loader->load(__DIR__ . '/../config/services.yaml');
+
+$containerBuilder->compile();
+
+/** @var App $app */
+$app = $containerBuilder->get(App::class);
+$app->run($argv[1]);

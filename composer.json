@@ -1,0 +1,34 @@
+{
+    "name": "hxv/task-rofi",
+    "description": "Rofi menu for Taskwarrior.",
+    "type": "project",
+    "require": {
+        "symfony/process": "^5.2",
+        "php": "^8.0",
+        "symfony/serializer": "^5.2",
+        "symfony/property-access": "^5.2",
+        "symfony/dependency-injection": "^5.2",
+        "symfony/event-dispatcher": "^5.2",
+        "symfony/yaml": "^5.2",
+        "symfony/config": "^5.2"
+    },
+    "license": "WTFPL",
+    "authors": [
+        {
+            "name": "Michał Włodarczyk",
+            "email": "admin@hxv.me"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "hxv\\TaskRofi\\": "src"
+        }
+    },
+    "require-dev": {
+        "vimeo/psalm": "^4.6"
+    },
+    "bin": [
+        "bin/task-rofi"
+    ]
+}
